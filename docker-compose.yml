@@ -1,0 +1,43 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./promethues/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    container_name: prometheus
+    comand:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/urs/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9000
+    links:
+      - cadvisor:cadvisor
+      - alertmanager:alertmanager
+    depends_on:
+      - cadvisor
+    networks:
+      - prometheus
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:var/lib/docker:ro
+    ports:
+      - 8080:8808
+    networks:
+      - prometheus
+    restart: unless-stopped
+    deploy:
+      mode: global
+
+  volumes:
+      prometheus_data: {}
+
+  networks:
+      prometheus:
