@@ -59,8 +59,8 @@ services:
       - ${GRAFANA_PORT}:${GRAFANA_PORT_DOCKER}
     networks:
       - prometheus
-    env_file:
-      - ./grafana/config.monitoring
+#    env_file:
+#      - ./grafana/config.monitoring
     restart: unless-stopped
 
   node-exporter:
