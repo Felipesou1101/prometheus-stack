@@ -94,12 +94,12 @@ services:
     networks:
       - prometheus
     restart: unless-stopped   
+  
+volumes:
+    prometheus_data: {}
+    alertmanager_data: {}
+    grafana_data: {}
+    blackbox_exporter_data: {}
 
-  volumes:
-      prometheus_data: {}
-      alertmanager_data: {}
-      grafana_data: {}
-      blackbox_exporter_data: {}
-
-  networks:
-      prometheus:
+networks:
+    prometheus:
