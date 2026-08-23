@@ -2,7 +2,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./prometheus/:/etc/prometheus/
+      - ./config/prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus
     container_name: prometheus
     command:
@@ -38,7 +38,7 @@ services:
     image: prom/alertmanager
     container_name: alertmanager
     volumes:
-      - ./alertmanager/:/etc/alertmanager/
+      - ./config/alertmanager/:/etc/alertmanager/
       - alertmanager_data:/alertmanager
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
@@ -87,7 +87,7 @@ services:
     image: prom/blackbox-exporter:latest
     container_name: blackbox-exporter
     volumes:
-      - ./blackbox-exporter/:/etc/blackbox_exporter/
+      - ./config/blackbox-exporter/:/etc/blackbox_exporter/
       - blackbox_exporter_data:/blackbox_exporter
     command:
       - '--config.file=/etc/blackbox_exporter/blackbox.yml'
