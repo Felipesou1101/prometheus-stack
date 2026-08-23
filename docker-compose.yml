@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     volumes:
       - /:/rootfs:ro
@@ -33,11 +33,9 @@ services:
     networks:
       - prometheus
     restart: unless-stopped
-    deploy:
-      mode: global
   
   alertmanager:
-    image: prom/alertmanager
+    image: prom/alertmanager:latest
     container_name: alertmanager
     volumes:
       - ./alertmanager/:/etc/alertmanager/
@@ -52,7 +50,7 @@ services:
     restart: unless-stopped
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
     container_name: grafana
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
@@ -65,10 +63,43 @@ services:
       - ./grafana/config.monitoring
     restart: unless-stopped
 
+    node-exporter:
+      image: quay.io/prometheus/node-exporter:latest
+      container_name: node-exporter
+      ports:
+        - ${NODE_EXPORTER_PORT}:${NODE_EXPORTER_PORT_DOCKER}
+      volumes:
+        - /proc:/host/proc:ro
+        - /sys:/host/sys:ro
+        - /:/rootfs:ro
+        - /:/host:ro,rslave
+      command:
+        - '--path.procfs=/host/proc'
+        - '--path.rootfs=/host'
+        - '--path.sysfs=/host/sys'
+      networks:
+        - prometheus
+      restart: unless-stopped
+
+    blackbox-exporter:
+      image: prom/blackbox-exporter:latest
+      container_name: blackbox-exporter
+      volumes:
+        - ./blackbox-exporter/:/etc/blackbox_exporter/
+        - blackbox_exporter_data:/blackbox_exporter
+      command:
+        - '--config.file=/etc/blackbox_exporter/blackbox.yml'
+      ports:
+        - ${BLACKBOX_EXPORTER_PORT}:${BLACKBOX_EXPORTER_PORT_DOCKER}
+      networks:
+        - prometheus
+      restart: unless-stopped   
+
   volumes:
       prometheus_data: {}
       alertmanager_data: {}
       grafana_data: {}
+      blackbox_exporter_data: {}
 
   networks:
       prometheus:
