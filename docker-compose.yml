@@ -12,10 +12,6 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT_DOCKER}
-    depends_on:
-      - cadvisor
-      - alertmanager
-      - grafana
     networks:
       - prometheus
     restart: unless-stopped
@@ -87,12 +83,17 @@ services:
     image: prom/blackbox-exporter:latest
     container_name: blackbox-exporter
     volumes:
-      - ./config/blackbox-exporter/:/etc/blackbox_exporter/
+      - ./config/blackbox/:/etc/blackbox_exporter/
       - blackbox_exporter_data:/blackbox_exporter
     command:
       - '--config.file=/etc/blackbox_exporter/blackbox.yml'
     ports:
       - ${BLACKBOX_EXPORTER_PORT}:${BLACKBOX_EXPORTER_PORT_DOCKER}
+    depends_on:
+      - cadvisor
+      - alertmanager
+      - grafana
+      - prometheus
     networks:
       - prometheus
     restart: unless-stopped   
